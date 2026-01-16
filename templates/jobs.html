@@ -1,0 +1,49 @@
+from flask import Flask, render_template, request, redirect
+import sqlite3
+
+app = Flask(__name__)
+
+def get_db():
+    return sqlite3.connect("jobs.db")
+
+@app.route("/")
+def login():
+    return render_template("login.html")
+
+@app.route("/jobs")
+def jobs():
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute("SELECT company, role, location, salary FROM jobs")
+    data = cur.fetchall()
+    conn.close()
+    return render_template("jobs.html", jobs=data)
+
+@app.route("/recruiter")
+def recruiter():
+    return render_template("recruiter.html")
+
+@app.route("/post_job", methods=["P<!DOCTYPE html>
+<html>
+<head>
+    <title>Jobs</title>
+</head>
+<body>
+    <h2>Available Jobs</h2>
+
+    {% for job in jobs %}
+        <p>
+            <b>Company:</b> {{ job[0] }} |
+            <b>Role:</b> {{ job[1] }} |
+            <b>Location:</b> {{ job[2] }} |
+            <b>Salary:</b> {{ job[3] }}
+        </p>
+        <hr>
+    {% else %}
+        <p>No jobs posted yet.</p>
+    {% endfor %}
+
+    <br>
+    <a href="/">Back to Login</a>
+</body>
+</html>
